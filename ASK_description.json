@@ -1,0 +1,158 @@
+{
+  "meta": {
+    "projectName": "안전NOW | 도입 문의하기",
+    "date": "2026-05-11",
+    "author": "이경진",
+    "version": "v1.0.0"
+  },
+  "screens": [
+    {
+      "id": "SCR-001",
+      "name": "도입 문의 메인",
+      "basicInfo": [
+        ["화면 ID", "SCR-001"],
+        ["화면명", "도입 문의 메인"],
+        ["URL Path", "/ASK_shared_planner.html"],
+        ["진입 경로", "GNB > 고객 지원 > 도입 문의하기 / 푸터 CTA / 모바일 사이드 메뉴 > 도입 문의하기"],
+        ["이전 화면", "직전 화면 (대부분 메인/기능 소개/가격 안내) [추정]"],
+        ["이후 화면", "SCR-002 (문의 정상 제출 시 모달 노출)"]
+      ],
+      "purpose": "잠재 고객이 회사·근로자 수·담당자 정보·문의 내용을 입력하여 도입 상담을 신청하는 화면. 영업 리드 확보가 핵심 목적이며, 부담 없이 작성할 수 있도록 입력 항목 수를 최소화한다.",
+      "access": {
+        "headers": ["접근 가능 사용자", "예외 처리"],
+        "rows": [
+          ["비인증 사용자 전체", "로그인 세션 존재 여부와 무관하게 접근 가능 [추정]"],
+          ["로그인 사용자", "동일하게 접근 가능. 별도 자동 입력은 없음 [추정]"]
+        ]
+      },
+      "components": {
+        "headers": ["컴포넌트명", "타입", "노출 필수", "입력 필수", "유효성 조건", "비고"],
+        "rows": [
+          ["GNB (Global Nav)", "고정 헤더", "Y", "—", "—", "공통 컴포넌트 H00. 스크롤 시 sticky 유지, backdrop-blur 적용"],
+          ["고객 지원 드롭다운", "Hover 메뉴", "Y", "—", "—", "도입 문의하기 / 소개자료 / FAQ. 현재 페이지(도입 문의하기) 활성 상태 표시"],
+          ["모바일 햄버거 버튼", "버튼 (lg 미만)", "Y", "—", "—", "tap → 우측 사이드 드로어 슬라이드 인"],
+          ["모바일 사이드 메뉴", "Side Drawer", "Y", "—", "—", "1024px 미만에서만 동작. 우측에서 슬라이드, ESC/배경 탭으로 닫힘"],
+          ["Hero 섹션", "타이틀 영역", "Y", "—", "—", "S01. \"부담 없이 문의해 주세요\" 단일 타이틀"],
+          ["회사명 입력", "Text Input", "Y", "Y", "공백 불가", "placeholder: 회사명을 입력해 주세요"],
+          ["근로자 수 선택", "Select", "Y", "Y", "8개 구간 중 1개 선택 (1~30명 ~ 1,000명 이상)", "기본값 빈 상태 (\"근로자 수를 선택해 주세요\")"],
+          ["담당자 이름 입력", "Text Input", "Y", "Y", "공백 불가", "—"],
+          ["담당자 연락처 입력", "Tel Input", "Y", "Y", "전화번호 형식 [추정]", "placeholder: 010-0000-0000. 데스크탑 2열 그리드 좌측"],
+          ["담당자 이메일 입력", "Email Input", "Y", "Y", "이메일 형식 (브라우저 type=email)", "placeholder: example@company.com. 데스크탑 2열 그리드 우측"],
+          ["문의 사항 입력", "Textarea", "Y", "Y", "공백 불가, 최소 높이 140px", "세로 리사이즈 허용 (resize-y)"],
+          ["개인정보 동의 체크박스", "Checkbox", "Y", "Y", "체크 필수", "수집 항목·이용 목적·보유 기간(3년) 안내 텍스트 포함"],
+          ["도입 문의하기 버튼", "Submit Button", "Y", "—", "—", "Accent 컬러(주황) full-width. 클릭 시 폼 valid 검증 → 모달 노출"],
+          ["문의 접수 완료 모달", "Modal", "N", "—", "submit 성공 시", "SCR-002 참조. backdrop blur, ESC/배경 탭/확인 버튼으로 닫힘"],
+          ["FTR (Footer)", "고정 푸터", "Y", "—", "—", "공통 컴포넌트 F00. 회사 정보·연락처·CTA(무료 체험·도입 문의)·약관 링크"]
+        ]
+      },
+      "features": [
+        {
+          "title": "5-1. 문의 폼 제출 플로우",
+          "headers": ["조건", "동작", "결과", "비고"],
+          "rows": [
+            ["도입 문의하기 버튼 클릭", "form.checkValidity() 실행", "유효성 검증 통과 시 모달 노출 + 폼 reset / 실패 시 reportValidity()로 첫 invalid 필드 포커스", "현재는 클라이언트 단 검증만 수행. 서버 전송 로직은 별도 연동 필요 [추정]"],
+            ["필수 필드 누락", "브라우저 기본 invalid 메시지 표시", "해당 필드로 자동 스크롤·포커스", "HTML5 required 속성 활용"],
+            ["개인정보 동의 체크 안 함", "체크박스에 invalid 표시", "submit 차단", "—"],
+            ["폼 정상 제출", "openModal() 호출 + form.reset()", "성공 모달 표시 (body overflow:hidden)", "모달 노출 시 페이지 스크롤 잠금"]
+          ]
+        },
+        {
+          "title": "5-2. GNB 동작 (PC)",
+          "headers": ["조건", "동작", "결과", "비고"],
+          "rows": [
+            ["고객 지원 메뉴 hover", "드롭다운 페이드 인 (opacity·visibility 트랜지션)", "도입 문의하기 / 소개자료 / FAQ 3개 링크 노출", "현재 페이지(도입 문의하기)는 brand-50 배경 + brand-600 굵은 글씨로 활성 표시"],
+            ["기능 소개 / 가격 안내 / 도입 사례 클릭", "각 페이지로 이동", "—", "—"],
+            ["로그인 텍스트 클릭", "https://safenow.co.kr/mber/support/login/login 이동", "—", "외부 URL"],
+            ["무료 체험 신청 하기 클릭", "FRE_shared_planner.html 이동", "—", "Accent CTA 버튼"]
+          ]
+        },
+        {
+          "title": "5-3. 모바일 사이드 메뉴",
+          "headers": ["조건", "동작", "결과", "비고"],
+          "rows": [
+            ["햄버거 버튼 tap (1024px 미만)", "openMenu(): is-open 클래스 토글 + body.menu-open + aria-expanded=true", "사이드 드로어 우측에서 translateX(0) 슬라이드 인 + 배경 dim", "transition .3s cubic-bezier"],
+            ["배경 dim 영역 tap / X 버튼 tap / ESC 키", "closeMenu()", "드로어 닫힘 + 배경 dim 사라짐 + 페이지 스크롤 복원", "—"],
+            ["메뉴 링크 tap", "closeMenu() 후 페이지 이동", "—", "navLinks.forEach로 각 링크에 close 핸들러 부착"],
+            ["뷰포트가 1024px 이상으로 리사이즈", "matchMedia change 이벤트 → closeMenu()", "메뉴 강제 닫힘 (PC GNB로 전환)", "—"]
+          ]
+        },
+        {
+          "title": "5-4. 문의 접수 완료 모달 (SCR-002)",
+          "headers": ["조건", "동작", "결과", "비고"],
+          "rows": [
+            ["폼 정상 제출", "modal.classList.remove('hidden') + add('flex')", "모달 노출 + body.style.overflow='hidden'", "z-index: 80"],
+            ["확인 버튼 클릭 / 배경 클릭 / ESC 키", "closeModal()", "모달 닫힘 + body overflow 복원", "3가지 방식 모두 동일 결과"]
+          ]
+        }
+      ],
+      "commonPolicy": {
+        "headers": ["항목", "내용"],
+        "rows": [
+          ["반응형 분기", "1024px 이상: PC GNB + 데스크탑 레이아웃 / 1024px 미만: 햄버거 + 사이드 드로어 / 768px 이상: 연락처·이메일 2열 그리드 / 768px 미만: 1열 스택"],
+          ["폰트", "Pretendard Variable (CDN: cdn.jsdelivr.net), antialiased"],
+          ["브랜드 컬러", "Brand Blue 500=#3B82F6 / 600=#2563EB / 700=#1D4ED8 / Accent Orange 500=#F97316 / 600=#EA580C"],
+          ["텍스트 컬러", "Ink 900=#0F172A (본문) / 700=#334155 (보조) / 500=#64748B (placeholder·메타)"],
+          ["섹션 식별", "data-section-id (H00·S01·S02·F00) / data-section-name 속성으로 구분"],
+          ["접근성", "모달·드로어 role=dialog + aria-modal=true / 햄버거 aria-expanded·aria-controls / ESC 키 닫힘 일관 적용"],
+          ["보안·개인정보", "수집 항목: 회사명·담당자 정보 / 이용 목적: 문의 응대 및 도입 상담 / 보유 기간: 3년 / 동의 체크 필수"]
+        ]
+      }
+    },
+    {
+      "id": "SCR-002",
+      "name": "문의 접수 완료 모달",
+      "basicInfo": [
+        ["화면 ID", "SCR-002"],
+        ["화면명", "문의 접수 완료 모달"],
+        ["URL Path", "/ASK_shared_planner.html (모달 오버레이)"],
+        ["진입 경로", "SCR-001 도입 문의하기 버튼 클릭 → 폼 유효성 통과"],
+        ["이전 화면", "SCR-001"],
+        ["이후 화면", "SCR-001 (모달 닫힘 후 폼이 reset된 상태로 복귀)"]
+      ],
+      "purpose": "사용자에게 도입 문의가 정상적으로 접수되었음을 명확히 안내하고, 다음 행동(이탈 또는 다른 페이지 탐색)으로 자연스럽게 유도한다.",
+      "access": {
+        "headers": ["접근 가능 사용자", "예외 처리"],
+        "rows": [
+          ["폼을 정상 제출한 사용자", "유효성 검증 실패 시 모달 미노출"]
+        ]
+      },
+      "components": {
+        "headers": ["컴포넌트명", "타입", "노출 필수", "입력 필수", "유효성 조건", "비고"],
+        "rows": [
+          ["배경 딤 + 블러", "Backdrop", "Y", "—", "—", "bg-ink-900/50 + backdrop-blur-sm. 클릭 시 모달 닫힘"],
+          ["체크 아이콘 원형 배지", "SVG Icon", "Y", "—", "—", "brand-50 원형 배경 + brand-600 체크 SVG"],
+          ["타이틀 텍스트", "Heading", "Y", "—", "—", "\"문의가 정상적으로 접수되었습니다\" / 2xl font-extrabold ink-900"],
+          ["확인 버튼", "Button", "Y", "—", "—", "Accent full-width. 클릭 시 모달 닫힘"]
+        ]
+      },
+      "features": [
+        {
+          "title": "5-1. 모달 노출",
+          "headers": ["조건", "동작", "결과", "비고"],
+          "rows": [
+            ["openModal() 호출", "modal.classList.remove('hidden') + add('flex')", "fixed inset-0 z-[80] 오버레이 노출", "—"],
+            ["body 스크롤 잠금", "document.body.style.overflow='hidden'", "배경 페이지 스크롤 차단", "—"]
+          ]
+        },
+        {
+          "title": "5-2. 모달 닫기",
+          "headers": ["조건", "동작", "결과", "비고"],
+          "rows": [
+            ["확인 버튼 클릭", "closeModal() 호출", "모달 hidden + body overflow 복원", "—"],
+            ["배경 dim 클릭", "closeModal() 호출", "모달 닫힘", "backdrop addEventListener 처리"],
+            ["ESC 키 입력", "keydown 이벤트 → modal hidden 여부 체크 후 closeModal()", "모달 닫힘", "document.addEventListener('keydown')"]
+          ]
+        }
+      ],
+      "commonPolicy": {
+        "headers": ["항목", "내용"],
+        "rows": [
+          ["z-index", "80 (사이드 메뉴·드로어보다 상위)"],
+          ["반응형", "max-w-md w-full (모바일에서 좌우 16px 패딩 유지)"],
+          ["접근성", "role=dialog / aria-modal=true / aria-labelledby=inquiry-success-title"],
+          ["폼 후처리", "모달 노출과 동시에 form.reset() 실행 — 모달 닫힘 후 빈 폼 상태"]
+        ]
+      }
+    }
+  ]
+}
